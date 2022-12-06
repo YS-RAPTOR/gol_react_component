@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import GOL from "../components/GOL";
+import GOLComponent from "../components/GOL";
 
 const Home: NextPage = () => {
   return (
@@ -13,7 +13,7 @@ const Home: NextPage = () => {
       </Head>
       <div className="flex h-screen flex-col justify-center">
         <div className="flex w-screen justify-center">
-          <GOL width={800} height={800} />
+          <GOLComponent width={800} height={800} />
         </div>
       </div>
     </>
