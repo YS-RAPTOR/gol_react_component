@@ -1,7 +1,21 @@
+import { Domain } from 'domain';
 import * as THREE from 'three';
 
 // RGB Channel contain 1 if alive and 0 if dead
 // Alpha Channel Contains Health of Cell
+
+const Colors = [
+    new THREE.Color(0x000000),
+    new THREE.Color(0xFFFFFF),
+    new THREE.Color(0x0000FF),
+    new THREE.Color(0x00FF00),
+    new THREE.Color(0x00FFFF),
+    new THREE.Color(0xFF0000),
+    new THREE.Color(0xFF00FF),
+    new THREE.Color(0x000000),
+    new THREE.Color(0x000000),
+    new THREE.Color(0xFFFF00),
+]
 
 const vertSource = `
 varying vec2 vUvs;
@@ -13,8 +27,12 @@ void main() {
 `;
 
 const GOLSource = `
+precision highp float;
+const float distToAccept = 0.003;
+
 uniform sampler2D uTexture; 
 uniform vec2 uResolution;
+uniform vec2 uMouse;
 varying vec2 vUvs;
 
 int getNeighbors(vec2 start){
@@ -56,8 +74,8 @@ const drawSource = `
 precision mediump float;
 
 uniform sampler2D uTexture; 
-varying vec2 vUvs;
 uniform vec3 uColor[10];
+varying vec2 vUvs;
 
 void main() {
     gl_FragColor = vec4(uColor[int(texture2D(uTexture, vUvs).a)], 1.0);
@@ -67,6 +85,7 @@ void main() {
 export default class GOLRender {
     // Variables
     size: { height: number, width: number };
+    boundingBox: DOMRect;
 
     // Scenes
     drawScene: THREE.Scene;
@@ -77,6 +96,7 @@ export default class GOLRender {
 
     // Uniforms
     resolution: THREE.Vector2;
+    mouse: THREE.Vector2;
 
     // Geometry and Materials
     geometry: THREE.PlaneGeometry;
@@ -103,6 +123,7 @@ export default class GOLRender {
         };
 
         this.resolution = new THREE.Vector2(this.size.width, this.size.height);
+        this.boundingBox = canvas.getBoundingClientRect();
 
         // Setting up Buffers
         this.frontBuffer = new THREE.WebGLRenderTarget(this.size.width, this.size.height, {
@@ -128,27 +149,17 @@ export default class GOLRender {
         // Setting up initial random state
         this.initialTexture = this.createRandomTexture();
 
+        // Setting up mouse
+        this.mouse = new THREE.Vector2(-1, -1);
+
+
         // Setting up geometry and materials
         this.geometry = new THREE.PlaneGeometry(2, 2);
 
         this.quadMaterial = new THREE.ShaderMaterial({
             uniforms: {
                 uTexture: { value: null },
-                uResolution: { value: this.resolution },
-                uColor: {
-                    value: [
-                        new THREE.Color(0x000000),
-                        new THREE.Color(0xFFFFFF),
-                        new THREE.Color(0x0000FF),
-                        new THREE.Color(0x00FF00),
-                        new THREE.Color(0x00FFFF),
-                        new THREE.Color(0xFF0000),
-                        new THREE.Color(0xFF00FF),
-                        new THREE.Color(0x000000),
-                        new THREE.Color(0x000000),
-                        new THREE.Color(0xFFFF00),
-                    ]
-                }
+                uColor: { value: Colors }
             },
             vertexShader: vertSource,
             fragmentShader: drawSource
@@ -157,7 +168,8 @@ export default class GOLRender {
         this.GOLMaterial = new THREE.ShaderMaterial({
             uniforms: {
                 uTexture: { value: this.initialTexture },
-                uResolution: { value: this.resolution }
+                uResolution: { value: this.resolution },
+                uMouse: { value: this.mouse }
             },
             vertexShader: vertSource,
             fragmentShader: GOLSource
@@ -200,7 +212,20 @@ export default class GOLRender {
         return texture;
     };
 
+    onMouseMove = (event: MouseEvent) => {
+        // Convert Global Mouse Position to Local Mouse Position
+        // Then Normalize it
+        this.mouse.x = (event.clientX - this.boundingBox.left) / this.boundingBox.width;
+
+        // Invert Y
+        this.mouse.y = 1.0 - (event.clientY - this.boundingBox.top) / this.boundingBox.height;
+    }
+
     render = () => {
+        // Update Uniforms
+        this.GOLMaterial.uniforms.uMouse!.value = this.mouse;
+        this.GOLMaterial.uniforms.uResolution!.value = this.resolution;
+
         // Render to Front Buffer
         this.renderer.setRenderTarget(this.frontBuffer);
         this.renderer.render(this.GOLScene, this.camera);
