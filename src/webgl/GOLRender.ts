@@ -6,17 +6,18 @@ import { Vector2 } from 'three';
 // Alpha Channel Contains Health of Cell
 
 const Colors = [
-    new THREE.Color(0x000000),
+    new THREE.Color(0x000000), // Dead Color
+    new THREE.Color(0xFF0000),
+    new THREE.Color(0x00FF00),
+    new THREE.Color(0x0000FF),
     new THREE.Color(0xFFFFFF),
-    new THREE.Color(0x000000),
-    new THREE.Color(0xFFFFFF),
-    new THREE.Color(0xFFFFFF),
-    new THREE.Color(0xFFFFFF),
-    new THREE.Color(0xFFFFFF),
-    new THREE.Color(0xFFFFFF),
-    new THREE.Color(0x000000),
-    new THREE.Color(0x000000),
+    new THREE.Color(0x000000) // Static Color
 ]
+
+const numOfColors = Colors.length;
+const mouseMoveDistance = 0.005;
+const clickDistance = 0.01;
+const chance = 0.5;
 
 const vertSource = `
 varying vec2 vUvs;
@@ -29,12 +30,11 @@ void main() {
 
 const GOLSource = `
 precision highp float;
-const float distToAccept = 0.003;
-const float chanceToAccept = 0.5;
+const float chanceToAccept = ${chance};
 
 uniform sampler2D uTexture; 
 uniform vec2 uResolution;
-uniform ivec2 uMouse;
+uniform ivec3 uMouse;
 uniform int uScale;
 uniform float uTime;
 varying vec2 vUvs;
@@ -73,14 +73,17 @@ void main() {
         health += 1.0;
         status = vec4(1.0);
     }
-    status.a = clamp(health, 0.0, 9.0);
+    status.a = clamp(health, 0.0, ${numOfColors - 1}.0);
     gl_FragColor = status;
     
     // If the Mouse is Near by Spawn Life
 
-    vec2 mouse = vec2(uMouse) / vec2(uScale) / uResolution;
+    vec2 mouse = vec2(uMouse.xy) / vec2(uScale) / uResolution;
 
-    if(distance (vUvs, mouse) < distToAccept && getRandom(vUvs) > chanceToAccept){
+    float dist = uMouse.z > 0 ? ${clickDistance} : ${mouseMoveDistance};
+
+
+    if(distance (vUvs, mouse) < dist && getRandom(vUvs) > chanceToAccept){
         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     }
 }
@@ -90,7 +93,7 @@ const drawSource = `
 precision mediump float;
 
 uniform sampler2D uTexture; 
-uniform vec3 uColor[10];
+uniform vec3 uColor[${numOfColors}];
 varying vec2 vUvs;
 
 void main() {
@@ -113,7 +116,7 @@ export default class GOLRender {
 
     // Uniforms
     resolution: THREE.Vector2;
-    mouse: THREE.Vector2;
+    mouse: THREE.Vector3;
 
     // Geometry and Materials
     geometry: THREE.PlaneGeometry;
@@ -169,7 +172,7 @@ export default class GOLRender {
         this.initialTexture = this.createRandomTexture();
 
         // Setting up mouse
-        this.mouse = new THREE.Vector2(-100, -100);
+        this.mouse = new THREE.Vector3(-100, -100, 0);
 
 
         // Setting up geometry and materials
@@ -241,6 +244,27 @@ export default class GOLRender {
         this.mouse.x = event.clientX;
         // Invert Y
         this.mouse.y = (this.size.height * this.scale) - event.clientY;
+
+        this.mouse.z = event.buttons == 1 ? 1 : 0;
+    }
+
+    onTouch = (event: TouchEvent) => {
+        if (event.touches.length < 1 || !event.touches[0]) {
+            this.mouse.x = -100;
+            this.mouse.y = -100;
+            return;
+        }
+        this.mouse.x = event.touches[0].clientX;
+        // Invert Y
+        this.mouse.y = (this.size.height * this.scale) - event.touches[0].clientY;
+
+        this.mouse.z = 1;
+    }
+
+    onTouchEnd = () => {
+        this.mouse.x = -100;
+        this.mouse.y = -100;
+        this.mouse.z = 0;
     }
 
     resize = () => {
