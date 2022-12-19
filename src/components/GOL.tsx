@@ -9,6 +9,10 @@ const GOLComponent = ({ width, height }: { width: number; height: number }) => {
         const GOLCanvas = document.getElementById("GOL") as HTMLCanvasElement;
         if (!GOLCanvas) return;
         GOL = new GOLRender(GOLCanvas);
+
+        // Setting up Event Listeners
+        addEventListener("mousemove", GOL.onMouseMove);
+
         GOL.render();
     }, []);
 
