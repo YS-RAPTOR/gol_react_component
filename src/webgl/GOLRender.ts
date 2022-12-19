@@ -5,6 +5,7 @@ import { Vector2 } from 'three';
 // RGB Channel contain 1 if alive and 0 if dead
 // Alpha Channel Contains Health of Cell
 
+/*
 const Colors = [
     new THREE.Color(0x000000), // Dead Color
     new THREE.Color(0x134e4a), // 
@@ -15,12 +16,23 @@ const Colors = [
     new THREE.Color(0x2dd4bf),
     new THREE.Color(0x5eead4),
     new THREE.Color(0x99f6e4),
-    new THREE.Color(0xccfbf1), // Static Color
+    new THREE.Color(0xccfbf1),
+    new THREE.Color(0x000000) // Static Color
+]
+*/
+
+const Colors = [
+    new THREE.Color(0x000000), // Dead Color
+    new THREE.Color(0xFF0000),
+    new THREE.Color(0x00FF00),
+    new THREE.Color(0x0000FF),
+    new THREE.Color(0xFFFFFF),
+    new THREE.Color(0x000000) // Static Color
 ]
 
 const numOfColors = Colors.length;
-const distToAcceptMouseInput = 0.003;
-const chance = 0.5;
+const distToAcceptMouseInput = 0.005;
+const chance1 = 0.5;
 
 const vertSource = `
 varying vec2 vUvs;
@@ -34,7 +46,7 @@ void main() {
 const GOLSource = `
 precision highp float;
 const float distToAccept = ${distToAcceptMouseInput};
-const float chanceToAccept = ${chance};
+const float chanceToAccept = ${chance1};
 
 uniform sampler2D uTexture; 
 uniform vec2 uResolution;
