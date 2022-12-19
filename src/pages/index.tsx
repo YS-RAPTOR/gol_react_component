@@ -11,7 +11,12 @@ const Home: NextPage = () => {
                 <meta name="description" content="Game of Life" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <h1> Index.html </h1>
+            <iframe src="/background" className="absolute top-0 left-0 w-full h-full -z-10" />
+            <div className="flex h-screen flex-col justify-center">
+                <div className="flex w-screen justify-center">
+                    <canvas width={800} height={800} />
+                </div>
+            </div>
         </>
     );
 };
