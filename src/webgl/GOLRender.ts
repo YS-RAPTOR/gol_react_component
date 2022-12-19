@@ -8,14 +8,14 @@ import { Vector2 } from 'three';
 const Colors = [
     new THREE.Color(0x000000),
     new THREE.Color(0xFFFFFF),
-    new THREE.Color(0x0000FF),
-    new THREE.Color(0x00FF00),
-    new THREE.Color(0x00FFFF),
-    new THREE.Color(0xFF0000),
-    new THREE.Color(0xFF00FF),
+    new THREE.Color(0x000000),
+    new THREE.Color(0xFFFFFF),
+    new THREE.Color(0xFFFFFF),
+    new THREE.Color(0xFFFFFF),
+    new THREE.Color(0xFFFFFF),
+    new THREE.Color(0xFFFFFF),
     new THREE.Color(0x000000),
     new THREE.Color(0x000000),
-    new THREE.Color(0xFFFF00),
 ]
 
 const vertSource = `
@@ -35,6 +35,7 @@ const float chanceToAccept = 0.5;
 uniform sampler2D uTexture; 
 uniform vec2 uResolution;
 uniform ivec2 uMouse;
+uniform int uScale;
 uniform float uTime;
 varying vec2 vUvs;
 
@@ -77,7 +78,7 @@ void main() {
     
     // If the Mouse is Near by Spawn Life
 
-    vec2 mouse = vec2(uMouse) / uResolution;
+    vec2 mouse = vec2(uMouse) / vec2(uScale) / uResolution;
 
     if(distance (vUvs, mouse) < distToAccept && getRandom(vUvs) > chanceToAccept){
         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
@@ -101,6 +102,7 @@ export default class GOLRender {
     // Variables
     size: { height: number, width: number };
     canvas: HTMLCanvasElement;
+    scale: number;
 
     // Scenes
     drawScene: THREE.Scene;
@@ -130,13 +132,13 @@ export default class GOLRender {
     frontBuffer: THREE.WebGLRenderTarget;
     backBuffer: THREE.WebGLRenderTarget;
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement, scale = 5) {
         // Setting up size and resolution
         this.canvas = canvas;
-
+        this.scale = scale;
         this.size = {
-            height: canvas.height,
-            width: canvas.width
+            height: canvas.height / this.scale,
+            width: canvas.width / this.scale
         };
 
 
@@ -187,6 +189,7 @@ export default class GOLRender {
                 uTexture: { value: this.initialTexture },
                 uResolution: { value: this.resolution },
                 uMouse: { value: this.mouse },
+                uScale: { value: this.scale },
                 uTime: { value: 0 }
             },
             vertexShader: vertSource,
@@ -205,7 +208,11 @@ export default class GOLRender {
 
         // Setting up Renderer
         this.renderer = new THREE.WebGLRenderer({ canvas: canvas });
-        this.renderer.setSize(this.size.width, this.size.height);
+        this.renderer.setPixelRatio(1);
+        this.renderer.setSize(this.size.width * this.scale, this.size.height * this.scale);
+
+
+        // Testing
     }
 
     createRandomTexture = (chance = 0.3): THREE.DataTexture => {
@@ -233,14 +240,14 @@ export default class GOLRender {
     onMouseMove = (event: MouseEvent) => {
         this.mouse.x = event.clientX;
         // Invert Y
-        this.mouse.y = this.size.height - event.clientY;
+        this.mouse.y = (this.size.height * this.scale) - event.clientY;
     }
 
     resize = () => {
         // Change the Variables
         this.size = {
-            height: this.canvas.height,
-            width: this.canvas.width
+            height: this.canvas.height / this.scale,
+            width: this.canvas.width / this.scale
         };
 
         this.resolution = new THREE.Vector2(this.size.width, this.size.height);
@@ -249,12 +256,12 @@ export default class GOLRender {
         this.frontBuffer.setSize(this.size.width, this.size.height);
         this.backBuffer.setSize(this.size.width, this.size.height);
 
-        const tex = this.createRandomTexture(0.15);
+        const tex = this.createRandomTexture(0.3);
         this.GOLMaterial.uniforms.uTexture!.value = tex;
         this.quadMaterial.uniforms.uTexture!.value = tex;
 
         // Resize the Renderer
-        this.renderer.setSize(this.size.width, this.size.height);
+        this.renderer.setSize(this.size.width * this.scale, this.size.height * this.scale);
 
         // Update Uniforms
         this.GOLMaterial.uniforms.uResolution!.value = this.resolution;

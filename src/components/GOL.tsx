@@ -9,7 +9,7 @@ const GOLComponent = () => {
         GOLCanvas.width = window.innerWidth;
         GOLCanvas.height = window.innerHeight;
 
-        const GOL = new GOLRender(GOLCanvas);
+        const GOL = new GOLRender(GOLCanvas, 4);
 
         // Setting up Event Listeners   
         addEventListener("mousemove", GOL.onMouseMove);
