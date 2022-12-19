@@ -5,16 +5,48 @@ import { Vector2 } from 'three';
 // RGB Channel contain 1 if alive and 0 if dead
 // Alpha Channel Contains Health of Cell
 
-const Colors = [
-    new THREE.Color(0x000000), // Dead Color
-    new THREE.Color(0xFF0000),
-    new THREE.Color(0x00FF00),
-    new THREE.Color(0x0000FF),
-    new THREE.Color(0xFFFFFF),
-    new THREE.Color(0x000000) // Static Color
-]
+// Color Scheme 1
+const Colors = [[
+    new THREE.Color(0x050505), // Dead Color
+    new THREE.Color(0x3730a3),
+    new THREE.Color(0x7e22ce),
+    new THREE.Color(0xc026d3),
+    new THREE.Color(0xc026d3),
+    new THREE.Color(0xec4899),
+    new THREE.Color(0xe11d48),
+    new THREE.Color(0xfbbf24),
+    new THREE.Color(0xbef264),
+    new THREE.Color(0xfbbf24),
+    new THREE.Color(0xe11d48),
+    new THREE.Color(0xec4899),
+    new THREE.Color(0xc026d3),
+    new THREE.Color(0xc026d3),
+    new THREE.Color(0x7e22ce),
+    new THREE.Color(0x3730a3),
+    new THREE.Color(0x050505), // Static Color
+],
+// Color Scheme 2
+[
+    new THREE.Color(0x050505), // Dead Color
+    new THREE.Color(0x001F54),
+    new THREE.Color(0x001F54),
+    new THREE.Color(0x0e7490),
+    new THREE.Color(0x0d9488),
+    new THREE.Color(0x0d9488),
+    new THREE.Color(0x22c55e),
+    new THREE.Color(0xbef264),
+    new THREE.Color(0xfecdd3),
+    new THREE.Color(0xbef264),
+    new THREE.Color(0x0e7490),
+    new THREE.Color(0x22c55e),
+    new THREE.Color(0x0d9488),
+    new THREE.Color(0x0d9488),
+    new THREE.Color(0x1e40af),
+    new THREE.Color(0x001F54),
+    new THREE.Color(0x050505), // Static Color
+]];
 
-const numOfColors = Colors.length;
+const numOfColors = Colors[0]!.length;
 const mouseMoveDistance = 0.002;
 const clickDistance = 0.003;
 const chance = 0.5;
@@ -188,7 +220,7 @@ export default class GOLRender {
         this.quadMaterial = new THREE.ShaderMaterial({
             uniforms: {
                 uTexture: { value: null },
-                uColor: { value: Colors }
+                uColor: { value: Colors[Math.floor(Math.random() * 2)] }
             },
             vertexShader: vertSource,
             fragmentShader: drawSource
