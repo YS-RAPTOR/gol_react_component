@@ -11,13 +11,14 @@ const Colors = [
     new THREE.Color(0x00FF00),
     new THREE.Color(0x0000FF),
     new THREE.Color(0xFFFFFF),
-    new THREE.Color(0x000000) // Static Color
+    // new THREE.Color(0x000000) // Static Color
 ]
 
 const numOfColors = Colors.length;
-const mouseMoveDistance = 0.005;
-const clickDistance = 0.01;
+const mouseMoveDistance = 0.002;
+const clickDistance = 0.003;
 const chance = 0.5;
+const randomChance = 0.0001;
 
 const vertSource = `
 varying vec2 vUvs;
@@ -73,6 +74,11 @@ void main() {
         health += 1.0;
         status = vec4(1.0);
     }
+    else if(neighbors > 1 && getRandom(vUvs) <= float(${randomChance})){
+        //Random Chance
+        health = ${numOfColors - 1 + '.0'};
+        status = vec4(1.0);       
+    }
     status.a = clamp(health, 0.0, ${numOfColors - 1}.0);
     gl_FragColor = status;
     
@@ -81,11 +87,12 @@ void main() {
     vec2 mouse = vec2(uMouse.xy) / vec2(uScale) / uResolution;
 
     float dist = uMouse.z > 0 ? ${clickDistance} : ${mouseMoveDistance};
+    dist *= float(uScale);
 
-
-    if(distance (vUvs, mouse) < dist && getRandom(vUvs) > chanceToAccept){
+    if(distance (vUvs, mouse) < dist && getRandom(vUvs) <= chanceToAccept){
         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     }
+
 }
 `;
 
@@ -214,8 +221,7 @@ export default class GOLRender {
         this.renderer.setPixelRatio(1);
         this.renderer.setSize(this.size.width * this.scale, this.size.height * this.scale);
 
-
-        // Testing
+        console.log(randomChance)
     }
 
     createRandomTexture = (chance = 0.3): THREE.DataTexture => {
@@ -313,6 +319,6 @@ export default class GOLRender {
         // Update GOL Material
         this.GOLMaterial.uniforms.uTexture!.value = this.backBuffer.texture;
 
-        window.requestAnimationFrame(this.render);
+        // requestAnimationFrame(this.render);
     }
 }

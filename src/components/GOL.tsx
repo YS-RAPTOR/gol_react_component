@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import GOLRender from "../webgl/GOLRender";
 
-const GOLComponent = () => {
+const GOLComponent = ({ fps, scale = 5 }: { fps: number, scale: number }) => {
     useEffect(() => {
         const GOLCanvas = document.getElementById("GOL") as HTMLCanvasElement;
         if (!GOLCanvas) return;
@@ -9,7 +9,7 @@ const GOLComponent = () => {
         GOLCanvas.width = window.innerWidth;
         GOLCanvas.height = window.innerHeight;
 
-        const GOL = new GOLRender(GOLCanvas, 4);
+        const GOL = new GOLRender(GOLCanvas, scale);
 
         // Setting up Event Listeners   
 
@@ -30,7 +30,7 @@ const GOLComponent = () => {
             GOL.resize();
         });
 
-        GOL.render();
+        setInterval(GOL.render, (1 / fps) * 1000);
     }, []);
 
     return (

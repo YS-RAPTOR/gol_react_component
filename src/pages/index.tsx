@@ -19,7 +19,7 @@ const Home: NextPage = () => {
                 <meta name="description" content="Game of Life" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <GOLComponent />
+            <GOLComponent fps={30} />
             <div className="flex h-screen flex-col justify-center">
                 <div className="flex w-screen justify-center">
                     <div className="w-28 h-28 bg-white p-0 m-0" />
