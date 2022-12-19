@@ -1,17 +1,23 @@
 import { useEffect } from "react";
 import GOLRender from "../webgl/GOLRender";
 
-let GOL = null;
-
-const GOLComponent = ({ width, height }: { width: number; height: number }) => {
+const GOLComponent = () => {
     useEffect(() => {
-        // Initialize WebGL context
         const GOLCanvas = document.getElementById("GOL") as HTMLCanvasElement;
         if (!GOLCanvas) return;
-        GOL = new GOLRender(GOLCanvas);
 
-        // Setting up Event Listeners
+        GOLCanvas.width = window.innerWidth;
+        GOLCanvas.height = window.innerHeight;
+
+        const GOL = new GOLRender(GOLCanvas, 4);
+
+        // Setting up Event Listeners   
         addEventListener("mousemove", GOL.onMouseMove);
+        addEventListener("resize", (event) => {
+            GOLCanvas.width = window.innerWidth;
+            GOLCanvas.height = window.innerHeight;
+            GOL.resize();
+        });
 
         GOL.render();
     }, []);
@@ -19,9 +25,7 @@ const GOLComponent = ({ width, height }: { width: number; height: number }) => {
     return (
         <canvas
             id="GOL"
-            width={width}
-            height={height}
-            className="p1 border-2 border-black"
+            className="absolute top-0 left-0 w-full h-full -z-10"
         />
     );
 };
