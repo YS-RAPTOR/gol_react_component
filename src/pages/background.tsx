@@ -11,7 +11,7 @@ const Home: NextPage = () => {
                 <meta name="description" content="Game of Life" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <h1> Index.html </h1>
+            <GOLComponent />
         </>
     );
 };
