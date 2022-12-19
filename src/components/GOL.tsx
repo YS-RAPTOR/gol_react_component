@@ -13,16 +13,16 @@ const GOLComponent = () => {
 
         // Setting up Event Listeners   
 
+        addEventListener("mousemove", GOL.onMouseMove);
+        addEventListener("mousedown", GOL.onMouseMove);
+        addEventListener("mouseup", GOL.onMouseMove);
+
         if (navigator.maxTouchPoints > 0) {
             addEventListener("touchmove", GOL.onTouch);
             addEventListener("touchstart", GOL.onTouch);
             addEventListener("touchend", GOL.onTouchEnd);
             addEventListener("touchcancel", GOL.onTouchEnd);
         }
-
-        addEventListener("mousemove", GOL.onMouseMove);
-        addEventListener("mousedown", GOL.onMouseMove);
-        addEventListener("mouseup", GOL.onMouseMove);
 
         addEventListener("resize", (event) => {
             GOLCanvas.width = window.innerWidth;
