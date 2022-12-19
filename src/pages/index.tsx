@@ -22,7 +22,7 @@ const Home: NextPage = () => {
             <GOLComponent />
             <div className="flex h-screen flex-col justify-center">
                 <div className="flex w-screen justify-center">
-                    <div className="w-28 h-28 bg-white" />
+                    <div className="w-28 h-28 bg-white p-0 m-0" />
                 </div>
             </div>
         </>

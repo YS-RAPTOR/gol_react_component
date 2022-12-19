@@ -12,7 +12,18 @@ const GOLComponent = () => {
         const GOL = new GOLRender(GOLCanvas, 4);
 
         // Setting up Event Listeners   
+
+        if (navigator.maxTouchPoints > 0) {
+            addEventListener("touchmove", GOL.onTouch);
+            addEventListener("touchstart", GOL.onTouch);
+            addEventListener("touchend", GOL.onTouchEnd);
+            addEventListener("touchcancel", GOL.onTouchEnd);
+        }
+
         addEventListener("mousemove", GOL.onMouseMove);
+        addEventListener("mousedown", GOL.onMouseMove);
+        addEventListener("mouseup", GOL.onMouseMove);
+
         addEventListener("resize", (event) => {
             GOLCanvas.width = window.innerWidth;
             GOLCanvas.height = window.innerHeight;

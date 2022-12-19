@@ -5,22 +5,6 @@ import { Vector2 } from 'three';
 // RGB Channel contain 1 if alive and 0 if dead
 // Alpha Channel Contains Health of Cell
 
-/*
-const Colors = [
-    new THREE.Color(0x000000), // Dead Color
-    new THREE.Color(0x134e4a), // 
-    new THREE.Color(0x115e59),
-    new THREE.Color(0x0f766e),
-    new THREE.Color(0x0d9488),
-    new THREE.Color(0x14b8a6),
-    new THREE.Color(0x2dd4bf),
-    new THREE.Color(0x5eead4),
-    new THREE.Color(0x99f6e4),
-    new THREE.Color(0xccfbf1),
-    new THREE.Color(0x000000) // Static Color
-]
-*/
-
 const Colors = [
     new THREE.Color(0x000000), // Dead Color
     new THREE.Color(0xFF0000),
@@ -257,6 +241,22 @@ export default class GOLRender {
         this.mouse.x = event.clientX;
         // Invert Y
         this.mouse.y = (this.size.height * this.scale) - event.clientY;
+    }
+
+    onTouch = (event: TouchEvent) => {
+        if (event.touches.length < 1 || !event.touches[0]) {
+            this.mouse.x = -100;
+            this.mouse.y = -100;
+            return;
+        }
+        this.mouse.x = event.touches[0].clientX;
+        // Invert Y
+        this.mouse.y = (this.size.height * this.scale) - event.touches[0].clientY;
+    }
+
+    onTouchEnd = (event: TouchEvent) => {
+        this.mouse.x = -100;
+        this.mouse.y = -100;
     }
 
     resize = () => {
