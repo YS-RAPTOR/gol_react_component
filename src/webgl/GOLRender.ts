@@ -29,10 +29,12 @@ void main() {
 const GOLSource = `
 precision highp float;
 const float distToAccept = 0.003;
+const float chanceToAccept = 0.5;
 
 uniform sampler2D uTexture; 
 uniform vec2 uResolution;
 uniform vec2 uMouse;
+uniform float uTime;
 varying vec2 vUvs;
 
 int getNeighbors(vec2 start){
@@ -46,6 +48,10 @@ int getNeighbors(vec2 start){
     
     neighbors -= int(texture2D(uTexture, start).r);
     return neighbors;
+}
+
+float getRandom(vec2 pos){
+    return fract(sin(dot(pos + vec2(uTime), vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 void main() {
@@ -67,6 +73,10 @@ void main() {
     }
     status.a = clamp(health, 0.0, 9.0);
     gl_FragColor = status;
+    
+    if(distance (vUvs, uMouse.xy) < distToAccept && getRandom(vUvs) > chanceToAccept){
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
 }
 `;
 
@@ -169,7 +179,8 @@ export default class GOLRender {
             uniforms: {
                 uTexture: { value: this.initialTexture },
                 uResolution: { value: this.resolution },
-                uMouse: { value: this.mouse }
+                uMouse: { value: this.mouse },
+                uTime: { value: 0 }
             },
             vertexShader: vertSource,
             fragmentShader: GOLSource
@@ -225,6 +236,7 @@ export default class GOLRender {
         // Update Uniforms
         this.GOLMaterial.uniforms.uMouse!.value = this.mouse;
         this.GOLMaterial.uniforms.uResolution!.value = this.resolution;
+        this.GOLMaterial.uniforms.uTime!.value += 0.001;
 
         // Render to Front Buffer
         this.renderer.setRenderTarget(this.frontBuffer);
