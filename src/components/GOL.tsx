@@ -25,7 +25,7 @@ const GOLComponent = () => {
     return (
         <canvas
             id="GOL"
-            className="absolute top-0 left-0 w-full h-full"
+            className="absolute top-0 left-0 w-full h-full -z-10"
         />
     );
 };
