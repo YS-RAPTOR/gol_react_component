@@ -11,7 +11,7 @@ const Colors = [
     new THREE.Color(0x00FF00),
     new THREE.Color(0x0000FF),
     new THREE.Color(0xFFFFFF),
-    // new THREE.Color(0x000000) // Static Color
+    new THREE.Color(0x000000) // Static Color
 ]
 
 const numOfColors = Colors.length;
@@ -220,8 +220,6 @@ export default class GOLRender {
         this.renderer = new THREE.WebGLRenderer({ canvas: canvas });
         this.renderer.setPixelRatio(1);
         this.renderer.setSize(this.size.width * this.scale, this.size.height * this.scale);
-
-        console.log(randomChance)
     }
 
     createRandomTexture = (chance = 0.3): THREE.DataTexture => {
