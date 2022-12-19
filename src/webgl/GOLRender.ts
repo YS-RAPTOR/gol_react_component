@@ -5,17 +5,21 @@ import * as THREE from 'three';
 // Alpha Channel Contains Health of Cell
 
 const Colors = [
-    new THREE.Color(0x000000),
-    new THREE.Color(0xFFFFFF),
-    new THREE.Color(0x0000FF),
-    new THREE.Color(0x00FF00),
-    new THREE.Color(0x00FFFF),
-    new THREE.Color(0xFF0000),
-    new THREE.Color(0xFF00FF),
-    new THREE.Color(0x000000),
-    new THREE.Color(0x000000),
-    new THREE.Color(0xFFFF00),
+    new THREE.Color(0x000000), // Dead Color
+    new THREE.Color(0x134e4a), // 
+    new THREE.Color(0x115e59),
+    new THREE.Color(0x0f766e),
+    new THREE.Color(0x0d9488),
+    new THREE.Color(0x14b8a6),
+    new THREE.Color(0x2dd4bf),
+    new THREE.Color(0x5eead4),
+    new THREE.Color(0x99f6e4),
+    new THREE.Color(0xccfbf1), // Static Color
 ]
+
+const numOfColors = Colors.length;
+const distToAcceptMouseInput = 0.003;
+const chance = 0.5;
 
 const vertSource = `
 varying vec2 vUvs;
@@ -28,8 +32,8 @@ void main() {
 
 const GOLSource = `
 precision highp float;
-const float distToAccept = 0.003;
-const float chanceToAccept = 0.5;
+const float distToAccept = ${distToAcceptMouseInput};
+const float chanceToAccept = ${chance};
 
 uniform sampler2D uTexture; 
 uniform vec2 uResolution;
@@ -71,7 +75,7 @@ void main() {
         health += 1.0;
         status = vec4(1.0);
     }
-    status.a = clamp(health, 0.0, 9.0);
+    status.a = clamp(health, 0.0, ${numOfColors - 1}.0);
     gl_FragColor = status;
     
     if(distance (vUvs, uMouse.xy) < distToAccept && getRandom(vUvs) > chanceToAccept){
@@ -84,7 +88,7 @@ const drawSource = `
 precision mediump float;
 
 uniform sampler2D uTexture; 
-uniform vec3 uColor[10];
+uniform vec3 uColor[${numOfColors}];
 varying vec2 vUvs;
 
 void main() {
